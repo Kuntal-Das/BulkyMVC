@@ -6,10 +6,25 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(opt =>
-opt.UseSqlServer(builder.Configuration.GetConnectionString("MSSQL")));
-
-
+//opt.UseSqlServer(builder.Configuration.GetConnectionString("docker_MSSQL")));
+opt.UseSqlServer(builder.Configuration["ConnectionStrings:docker_MSSQL-3"]));
 var app = builder.Build();
+
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+//    try
+//    {
+//        var context = services.GetRequiredService<ApplicationDbContext>();
+//        context.Database.Migrate();
+//    }
+//    catch (Exception ex)
+//    {
+//        // Handle exceptions if needed
+//        var logger = services.GetRequiredService<ILogger<Program>>();
+//        logger.LogError(ex, "An error occurred while migrating the database.");
+//    }
+//}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

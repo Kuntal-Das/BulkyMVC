@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+  bulkyweb:
+    image: ${DOCKER_REGISTRY-}bulkyweb
+    build:
+      context: .
+      dockerfile: BulkyWeb/Dockerfile
+    environment:
+      - ENVID
+      - ENVPW
+      - ConnectionStrings:docker_MSSQL-3=Server=sqlserver;Database=Bulky;User ID=${ENVID};Password=${ENVPW};Connect Timeout=30;Encrypt=False;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False;
+    depends_on:
+      - sqlserver
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: ${ENVPW}
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - C:/DockerVolumes/BulkyMsSql/data:/var/opt/mssql/data
+      - C:/DockerVolumes/BulkyMsSql/log:/var/opt/mssql/log
+      - C:/DockerVolumes/BulkyMsSql/secrets:/var/opt/mssql/secrets  
