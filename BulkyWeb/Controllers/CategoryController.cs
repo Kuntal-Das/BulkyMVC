@@ -25,6 +25,10 @@ namespace BulkyWeb.Controllers
         [HttpPost]
         public IActionResult Create(Category category)
         {
+            if (!string.IsNullOrEmpty(category.Name) && category.Name.Contains("test", StringComparison.OrdinalIgnoreCase))
+            {
+                ModelState.AddModelError("Name", "Test is an Invalid value");
+            }
             if (ModelState.IsValid)
             {
                 _db.Categories.Add(category);
