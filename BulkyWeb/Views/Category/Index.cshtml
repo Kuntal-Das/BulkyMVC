@@ -20,7 +20,8 @@
         <thead>
             <tr>
                 <th>Category Name</th>
-                <th>Display Order</th>
+                <th class="text-center">Display Order</th>
+                <th class="text-center">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -28,7 +29,15 @@
             {
                 <tr>
                     <td>@category.Name</td>
-                    <td>@category.DisplayOrder</td>
+                    <td class="text-center">@category.DisplayOrder</td>
+                    <td class="row">
+                        <a asp-controller="Category" asp-action="Edit" asp-route-id="@category.CategoryId" class="link-body-emphasis col-6 text-center">
+                            <i class="bi bi-pencil-square" style="color:royalblue;"></i>
+                        </a>
+                        <a asp-controller="Category" asp-action="Delete" asp-route-id="@category.CategoryId" class="link-body-emphasis col-6 text-center">
+                            <i class="bi bi-trash-fill" style="color:crimson;"></i>
+                        </a>
+                    </td>
                 </tr>
             }
         </tbody>
