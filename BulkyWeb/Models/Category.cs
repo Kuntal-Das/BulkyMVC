@@ -9,7 +9,7 @@ namespace BulkyWeb.Models
         public int CategoryId { get; set; }
         [Required]
         [DisplayName("Category Name")]
-        [MinLength(5)]
+        [MinLength(3)]
         [MaxLength(30)]
         public string Name { get; set; }
         [DisplayName("Display Order")]

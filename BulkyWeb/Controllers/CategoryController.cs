@@ -33,6 +33,7 @@ namespace BulkyWeb.Controllers
             {
                 _db.Categories.Add(category);
                 _db.SaveChanges();
+                TempData["success"] = $"Category {category.Name} with Display Order {category.DisplayOrder} created Successfully";
                 return RedirectToAction("Index");
             }
             return View();
@@ -58,6 +59,7 @@ namespace BulkyWeb.Controllers
             {
                 _db.Categories.Update(category);
                 _db.SaveChanges();
+                TempData["success"] = $"Category {category.Name} with Display Order {category.DisplayOrder} updated Successfully";
                 return RedirectToAction("Index");
             }
             return View();
@@ -79,8 +81,10 @@ namespace BulkyWeb.Controllers
         [HttpPost]
         public IActionResult Delete(Category category)
         {
-            _db.Categories.Remove(category);
+            var tCat = _db.Categories.Find(category.CategoryId);
+            _db.Categories.Remove(tCat);
             _db.SaveChanges();
+            TempData["error"] = $"Category {tCat.Name} with Display Order {tCat.DisplayOrder} Deleted Successfully";
             return RedirectToAction("Index");
         }
     }
