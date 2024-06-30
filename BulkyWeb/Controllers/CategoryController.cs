@@ -54,18 +54,34 @@ namespace BulkyWeb.Controllers
         [HttpPost]
         public IActionResult Edit(Category category)
         {
-            //if (!string.IsNullOrEmpty(category.Name) && category.Name.Contains("test", StringComparison.OrdinalIgnoreCase))
-            //{
-            //    ModelState.AddModelError("Name", "Test is an Invalid value");
-            //}
             if (ModelState.IsValid)
             {
-                _db.Categories.Add(category);
+                _db.Categories.Update(category);
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View();
         }
 
+        public IActionResult Delete(int? id)
+        {
+            if (!id.HasValue || id is null || id < 0)
+            {
+                return NotFound();
+            }
+            var category = _db.Categories.Find(id.Value);
+            if (category == null)
+            {
+                return NotFound();
+            }
+            return View(category);
+        }
+        [HttpPost]
+        public IActionResult Delete(Category category)
+        {
+            _db.Categories.Remove(category);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
+        }
     }
 }
