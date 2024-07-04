@@ -1,4 +1,6 @@
-using BulkyWeb.Data;
+using Bulky.DataAccess.Data;
+using Bulky.DataAccess.Repositories;
+using Bulky.DataAccess.Repositories.Innterfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +10,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(opt =>
 //opt.UseSqlServer(builder.Configuration.GetConnectionString("docker_MSSQL")));
 opt.UseSqlServer(builder.Configuration["ConnectionStrings:docker_MSSQL-3"]));
+
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 var app = builder.Build();
 
 //using (var scope = app.Services.CreateScope())
