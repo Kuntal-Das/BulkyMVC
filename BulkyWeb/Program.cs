@@ -11,7 +11,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(opt =>
 //opt.UseSqlServer(builder.Configuration.GetConnectionString("docker_MSSQL")));
 opt.UseSqlServer(builder.Configuration["ConnectionStrings:docker_MSSQL-3"]));
 
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 var app = builder.Build();
 
 //using (var scope = app.Services.CreateScope())
