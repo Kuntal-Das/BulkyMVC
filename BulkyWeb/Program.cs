@@ -1,34 +1,21 @@
 using Bulky.DataAccess.Data;
 using Bulky.DataAccess.Repositories;
 using Bulky.DataAccess.Repositories.Innterfaces;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
+
+var conStrBuilder = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("Bulky_CON_COM"));
+conStrBuilder.Password = builder.Configuration["Bulky_Pass"];
+
 builder.Services.AddDbContext<ApplicationDbContext>(opt =>
-//opt.UseSqlServer(builder.Configuration.GetConnectionString("docker_MSSQL")));
-opt.UseSqlServer(builder.Configuration["ConnectionStrings:docker_MSSQL-3"]));
+opt.UseSqlServer(conStrBuilder.ConnectionString));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 var app = builder.Build();
-
-//using (var scope = app.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider;
-//    try
-//    {
-//        var context = services.GetRequiredService<ApplicationDbContext>();
-//        context.Database.Migrate();
-//    }
-//    catch (Exception ex)
-//    {
-//        // Handle exceptions if needed
-//        var logger = services.GetRequiredService<ILogger<Program>>();
-//        logger.LogError(ex, "An error occurred while migrating the database.");
-//    }
-//}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
