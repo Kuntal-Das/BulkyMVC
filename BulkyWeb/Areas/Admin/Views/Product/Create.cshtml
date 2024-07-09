@@ -23,7 +23,7 @@
         </div>
         <div class="mb-3 ps-3 row">
             <label asp-for="Description" class="p-0"></label>
-            <input asp-for="Description" class="form-control" />
+            <textarea asp-for="Description" class="form-control"></textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
         <div class="mb-3 ps-3 row">
@@ -67,7 +67,7 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-   @*  @{
+    @*  @{
         <partial name="_ValidationScriptsPartial" />
     } *@
 }
