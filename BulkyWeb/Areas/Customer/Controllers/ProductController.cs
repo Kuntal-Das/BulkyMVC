@@ -2,8 +2,9 @@
 using Bulky.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BulkyWeb.Controllers
+namespace BulkyWeb.Areas.Customer.Controllers
 {
+    [Area("Customer")]
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -15,7 +16,8 @@ namespace BulkyWeb.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            var products = _unitOfWork.Product.GetAll();
+            return View(products);
         }
         public IActionResult Create()
         {
