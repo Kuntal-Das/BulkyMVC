@@ -35,7 +35,7 @@
                     <td>@product.ISBN</td>
                     <td class="text-center">@product.ListedPrice.ToString("F")</td>
                     <td class="text">@product.Author</td>
-                    <td class="text">TODO</td>
+                    <td class="text">@product.CategoryId</td>
                     <td class="row">
                         <a asp-controller="Product" asp-action="Edit" asp-route-id="@product.Id" class="link-body-emphasis col-6 text-center">
                             <i class="bi bi-pencil-square" style="color:royalblue;"></i>
