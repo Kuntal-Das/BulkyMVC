@@ -10,10 +10,11 @@ namespace BulkyWeb.Areas.Admin.Controllers
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-
-        public ProductController(IUnitOfWork unitOfWork)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public IActionResult Index()
@@ -21,21 +22,52 @@ namespace BulkyWeb.Areas.Admin.Controllers
             var products = _unitOfWork.Product.GetAll();
             return View(products);
         }
-        public IActionResult Create()
+        public IActionResult Upsert(int? id)
         {
             var pvm = new ProductVM()
             {
-                Product = new Product(),
                 CategoryList = _unitOfWork.Category.GetAll().Select(c => new SelectListItem(c.Name, c.CategoryId.ToString()))
             };
+            if (id.HasValue && id is not null && id != 0)
+            {
+                pvm.Product = _unitOfWork.Product.Get(p => p.Id == id.Value);
+
+                return View(pvm);
+            }
+            else
+            {
+                pvm.Product = new Product();
+            }
             return View(pvm);
         }
         [HttpPost]
-        public IActionResult Create(ProductVM productVm)
+        public IActionResult Upsert(ProductVM productVm, IFormFile imageFile)
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.Product.Add(productVm.Product);
+                string wwwrootPath = _webHostEnvironment.WebRootPath;
+                if (imageFile is not null)
+                {
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                    string productImageDir = Path.Combine(wwwrootPath, @"images/Product");
+                    Directory.CreateDirectory(productImageDir);
+                    using (var fs = new FileStream(Path.Combine(productImageDir, fileName), FileMode.Create))
+                    {
+                        imageFile.CopyTo(fs);
+                    }
+                    productVm.Product.ImageUrl = @"/images/product/" + fileName;
+                }
+
+                if (productVm.Product.Id == 0)
+                {
+                    _unitOfWork.Product.Add(productVm.Product);
+                }
+                else
+                {
+                    _unitOfWork.Product.Update(productVm.Product);
+
+                }
+
                 _unitOfWork.Save();
                 TempData["success"] = $"Book {productVm.Product.Title} of {productVm.Product.Author} created Successfully";
                 return RedirectToAction("Index");
@@ -45,31 +77,31 @@ namespace BulkyWeb.Areas.Admin.Controllers
             return View(productVm);
         }
 
-        public IActionResult Edit(int? id)
-        {
-            if (!id.HasValue || id is null || id < 0)
-            {
-                return NotFound();
-            }
-            var product = _unitOfWork.Product.Get(c => c.Id == id.Value);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            return View(product);
-        }
-        [HttpPost]
-        public IActionResult Edit(Product product)
-        {
-            if (ModelState.IsValid)
-            {
-                _unitOfWork.Product.Update(product);
-                _unitOfWork.Save();
-                TempData["success"] = $"Book {product.Title} of {product.Author} updated Successfully";
-                return RedirectToAction("Index");
-            }
-            return View();
-        }
+        //public IActionResult Edit(int? id)
+        //{
+        //    if (!id.HasValue || id is null || id < 0)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var product = _unitOfWork.Product.Get(c => c.Id == id.Value);
+        //    if (product == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return View(product);
+        //}
+        //[HttpPost]
+        //public IActionResult Edit(Product product)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        _unitOfWork.Product.Update(product);
+        //        _unitOfWork.Save();
+        //        TempData["success"] = $"Book {product.Title} of {product.Author} updated Successfully";
+        //        return RedirectToAction("Index");
+        //    }
+        //    return View();
+        //}
 
         public IActionResult Delete(int? id)
         {
