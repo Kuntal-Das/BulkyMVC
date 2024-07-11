@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 *.env
 db_passwrd.txt
+/BulkyWeb/wwwroot/Images/Product
