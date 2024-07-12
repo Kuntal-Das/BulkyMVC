@@ -19,47 +19,15 @@
         </div>
     </div>
     <table id="products_table" class="table table-bordered table-striped" width="100%">
-        
     </table>
-@* 
-    <table class="">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>ISBN</th>
-                <th class="text-center">Listed Price</th>
-                <th class="text">Author</th>
-                <th class="text">Category</th>
-                <th class="text-center">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var product in Model.OrderBy(c => c.Title))
-            {
-                <tr>
-                    <td>@product.Title</td>
-                    <td>@product.ISBN</td>
-                    <td class="text-center">@product.ListedPrice.ToString("F")</td>
-                    <td class="text">@product.Author</td>
-                    <td class="text">@product.Category?.Name</td>
-                    <td class="row">
-                        <a asp-controller="Product" asp-action="Upsert" asp-route-id="@product.Id" class="link-body-emphasis col-6 text-center">
-                            <i class="bi bi-pencil-square" style="color:royalblue;"></i>
-                        </a>
-                        <a asp-controller="Product" asp-action="Delete" asp-route-id="@product.Id" class="link-body-emphasis col-6 text-center">
-                            <i class="bi bi-trash-fill" style="color:crimson;"></i>
-                        </a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table> *@
 </div>
 @section Scripts {
     @{
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
         <script src="//cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
-        <script src="~/js/productTable.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+        <script src="~/js/productTable.js"></script>
     }
 }
 

@@ -38,24 +38,24 @@ async function DeleteOnConfirm(id) {
         confirmButtonText: "Yes, delete it!"
     });
 
-    if (result.isConfirmed) {
-        url = `${window.location.href}/Delete?id=${id}`;
-        var response = await fetch(
-            url, {
-            method: 'DELETE',
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
-        if (response.ok) {
-            datatable.ajax.reload();
-            var json = await response.json()
-            toastr["success"](json.message);
-        } else {
-            datatable.ajax.reload();
-            var json = await response.json()
-            toastr["error"](json.message);
+    if (!result.isConfirmed) return;
+
+    url = `${window.location.href}/Delete?id=${id}`;
+    var response = await fetch(
+        url, {
+        method: 'DELETE',
+        headers: {
+            "Content-Type": "application/json"
         }
-  
+    });
+    if (response.ok) {
+        var json = await response.json();
+        toastr["success"](json.message);
+        datatable.ajax.reload();
+    } else {
+        var json = await response.json();
+        toastr["error"](json.message);
+        datatable.ajax.reload();
     }
+
 }

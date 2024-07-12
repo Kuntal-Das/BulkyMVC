@@ -3,6 +3,7 @@ using Bulky.Models;
 using Bulky.Models.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Net;
 
 namespace BulkyWeb.Areas.Admin.Controllers
 {
@@ -86,31 +87,6 @@ namespace BulkyWeb.Areas.Admin.Controllers
             return View(productVm);
         }
 
-        //public IActionResult Delete(int? id)
-        //{
-        //    if (!id.HasValue || id is null || id < 0)
-        //    {
-        //        return NotFound();
-        //    }
-        //    var product = _unitOfWork.Product.Get(c => c.Id == id.Value);
-        //    if (product == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return View(product);
-        //}
-        //[HttpPost]
-        //public IActionResult Delete(Product product)
-        //{
-        //    var tProd = _unitOfWork.Product.Get(c => c.Id == product.Id);
-        //    if (tProd == null) return NotFound();
-
-        //    _unitOfWork.Product.Remove(tProd);
-        //    _unitOfWork.Save();
-        //    TempData["error"] = $"Category {tProd.Title} of {tProd.Author} Deleted Successfully";
-        //    return RedirectToAction("Index");
-        //}
-
         #region API
         [HttpGet]
         public IActionResult All()
@@ -121,10 +97,15 @@ namespace BulkyWeb.Areas.Admin.Controllers
         [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            if (id == null) return Json(new { success = "false", message = "No Id provided" });
+            if (id == null)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { success = "false", message = "No Id provided" });
+            }
             var productToDel = _unitOfWork.Product.Get(p => p.Id == id);
             if (productToDel is null)
             {
+                Response.StatusCode = (int)HttpStatusCode.NotFound;
                 return Json(new { success = "false", message = "No Product Found" });
             }
 
