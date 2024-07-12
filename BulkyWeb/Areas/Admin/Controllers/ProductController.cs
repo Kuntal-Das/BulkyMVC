@@ -30,7 +30,7 @@ namespace BulkyWeb.Areas.Admin.Controllers
             };
             if (id.HasValue && id is not null && id != 0)
             {
-                pvm.Product = _unitOfWork.Product.Get(p => p.Id == id.Value);
+                pvm.Product = _unitOfWork.Product.Get(p => p.Id == id.Value) ?? new Product();
 
                 return View(pvm);
             }
@@ -86,7 +86,7 @@ namespace BulkyWeb.Areas.Admin.Controllers
             return View(productVm);
         }
 
-        //public IActionResult Edit(int? id)
+        //public IActionResult Delete(int? id)
         //{
         //    if (!id.HasValue || id is null || id < 0)
         //    {
@@ -100,39 +100,49 @@ namespace BulkyWeb.Areas.Admin.Controllers
         //    return View(product);
         //}
         //[HttpPost]
-        //public IActionResult Edit(Product product)
+        //public IActionResult Delete(Product product)
         //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _unitOfWork.Product.Update(product);
-        //        _unitOfWork.Save();
-        //        TempData["success"] = $"Book {product.Title} of {product.Author} updated Successfully";
-        //        return RedirectToAction("Index");
-        //    }
-        //    return View();
+        //    var tProd = _unitOfWork.Product.Get(c => c.Id == product.Id);
+        //    if (tProd == null) return NotFound();
+
+        //    _unitOfWork.Product.Remove(tProd);
+        //    _unitOfWork.Save();
+        //    TempData["error"] = $"Category {tProd.Title} of {tProd.Author} Deleted Successfully";
+        //    return RedirectToAction("Index");
         //}
 
+        #region API
+        [HttpGet]
+        public IActionResult All()
+        {
+            var products = _unitOfWork.Product.GetAll(includeProperties: nameof(Product.Category));
+            return Json(new { data = products });
+        }
+        [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            if (!id.HasValue || id is null || id < 0)
+            if (id == null) return Json(new { success = "false", message = "No Id provided" });
+            var productToDel = _unitOfWork.Product.Get(p => p.Id == id);
+            if (productToDel is null)
             {
-                return NotFound();
+                return Json(new { success = "false", message = "No Product Found" });
             }
-            var product = _unitOfWork.Product.Get(c => c.Id == id.Value);
-            if (product == null)
+
+            string wwwrootPath = _webHostEnvironment.WebRootPath;
+            string productImageDir = Path.Combine(wwwrootPath, @"images/Product");
+            if (!string.IsNullOrEmpty(productToDel.ImageUrl))
             {
-                return NotFound();
+                var oldImgPath = Path.Combine(wwwrootPath, productToDel.ImageUrl.TrimStart('/'));
+                if (System.IO.File.Exists(oldImgPath))
+                {
+                    System.IO.File.Delete(oldImgPath);
+                }
             }
-            return View(product);
-        }
-        [HttpPost]
-        public IActionResult Delete(Product product)
-        {
-            var tProd = _unitOfWork.Product.Get(c => c.Id == product.Id);
-            _unitOfWork.Product.Remove(tProd);
+            _unitOfWork.Product.Remove(productToDel);
             _unitOfWork.Save();
-            TempData["error"] = $"Category {tProd.Title} of {tProd.Author} Deleted Successfully";
-            return RedirectToAction("Index");
+
+            return Json(new { success = "true", message = $"Category {productToDel.Title} of {productToDel.Author} Deleted Successfully" });
         }
+        #endregion
     }
 }
