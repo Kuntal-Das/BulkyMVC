@@ -1,18 +1,23 @@
 using Bulky.DataAccess.Data;
 using Bulky.DataAccess.Repositories;
 using Bulky.DataAccess.Repositories.Innterfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 
-var conStrBuilder = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("Bulky_CON_COM"));
+var conStrBuilder = new SqlConnectionStringBuilder(builder.Configuration.GetConnectionString("Bulky_CON"));// _COM"));
 conStrBuilder.Password = builder.Configuration["Bulky_Pass"];
 
 builder.Services.AddDbContext<ApplicationDbContext>(opt =>
 opt.UseSqlServer(conStrBuilder.ConnectionString));
+
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 var app = builder.Build();
@@ -30,14 +35,13 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
-
-//app.MapControllerRoute(
-//    name: "areas",
-//    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
+
+app.MapRazorPages();
 
 app.Run();
