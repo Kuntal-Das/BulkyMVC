@@ -1,7 +1,7 @@
 using Bulky.DataAccess.Data;
 using Bulky.DataAccess.Repositories;
 using Bulky.DataAccess.Repositories.Innterfaces;
-using Microsoft.AspNetCore.Identity;
+using Bulky.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +16,7 @@ conStrBuilder.Password = builder.Configuration["Bulky_Pass"];
 builder.Services.AddDbContext<ApplicationDbContext>(opt =>
 opt.UseSqlServer(conStrBuilder.ConnectionString));
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
